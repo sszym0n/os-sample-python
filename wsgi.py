@@ -3,7 +3,7 @@ from flask import Flask, request, Response, send_file
 application = Flask(__name__)
 
 
-@app.route('/img', methods=['POST', 'GET'])
+@application.route('/img', methods=['POST', 'GET'])
 def saveImage():
     if request.method == 'POST':
         f = request.files['data']
@@ -14,7 +14,7 @@ def saveImage():
         return send_file('recv.jpg', 'image/jpeg')
 
 
-@app.route("/")
+@application.route("/")
 def hello():
     return "File uploader"
 
