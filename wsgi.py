@@ -1,4 +1,5 @@
 from flask import Flask, request, Response, send_file
+import os
 import json
 import binascii
 
@@ -19,10 +20,23 @@ def saveImage():
 
 @application.route('/json', methods=['POST'])
 def jsonSave():
-    json_data = json.loads(request.data)
-    buffer = binascii.a2b_base64(json_data['image'])
-    with open('recv.jpg', 'wb') as f:
-        f.write(buffer)
+    json_data = json.loads(request.get_json())
+
+    index = json_data["index"]
+    num_of_chunks = json_data["num_of_chunks"]
+    buffer = binascii.a2b_base64(json_data["data"])
+    fileMode = 'ab'
+    if index == 0: fileMode = 'wb'
+
+    try:
+        with open('out.tmp', fileMode) as file:
+            file.write(buffer)
+
+        if index == num_of_chunks:
+            os.rename('out.tmp', 'out.jpg')
+    except OSError:
+        return Response(response='OSError', status=500)
+
     return Response(response='OK', status=200)
 
 
